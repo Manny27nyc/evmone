@@ -72,10 +72,16 @@ inline evmc_status_code check_requirements(
 
 
 /// Implementation of a generic instruction "case".
-#define DISPATCH_CASE(OPCODE)                                          \
-    case OPCODE:                                                       \
-        if (code_it = invoke(op2fn::OPCODE, state, code_it); !code_it) \
-            goto exit;                                                 \
+#define DISPATCH_CASE(OPCODE)                                                         \
+    case OPCODE:                                                                      \
+        if (const auto status = check_requirements(instruction_table, state, OPCODE); \
+            status != EVMC_SUCCESS)                                                   \
+        {                                                                             \
+            state.status = status;                                                    \
+            goto exit;                                                                \
+        }                                                                             \
+        if (code_it = invoke(op2fn::OPCODE, state, code_it); !code_it)                \
+            goto exit;                                                                \
         break
 
 /// The signature of basic instructions which always succeed, e.g. ADD.
@@ -162,13 +168,6 @@ evmc_result execute(const VM& vm, ExecutionState& state, const CodeAnalysis& ana
         }
 
         const auto op = *code_it;
-        if (const auto status = check_requirements(instruction_table, state, op);
-            status != EVMC_SUCCESS)
-        {
-            state.status = status;
-            goto exit;
-        }
-
         switch (op)
         {
             DISPATCH_CASE(OP_STOP);
@@ -325,7 +324,8 @@ evmc_result execute(const VM& vm, ExecutionState& state, const CodeAnalysis& ana
             DISPATCH_CASE(OP_SELFDESTRUCT);
 
         default:
-            INTX_UNREACHABLE();
+            state.status = EVMC_UNDEFINED_INSTRUCTION;
+            goto exit;
         }
     }
 
