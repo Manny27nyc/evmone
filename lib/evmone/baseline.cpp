@@ -51,10 +51,15 @@ template <evmc_opcode Op>
 inline evmc_status_code check_requirements(
     const InstructionTable& instruction_table, ExecutionState& state) noexcept
 {
+    static constexpr auto traits = instr::traits[Op];
+    static constexpr auto since = *traits.since;
     const auto metrics = instruction_table[Op];
 
-    if (INTX_UNLIKELY(metrics.gas_cost == instr::undefined))
-        return EVMC_UNDEFINED_INSTRUCTION;
+    if constexpr (since != EVMC_FRONTIER)
+    {
+        if (INTX_UNLIKELY(metrics.gas_cost == instr::undefined))
+            return EVMC_UNDEFINED_INSTRUCTION;
+    }
 
     if (INTX_UNLIKELY((state.gas_left -= metrics.gas_cost) < 0))
         return EVMC_OUT_OF_GAS;
