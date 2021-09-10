@@ -19,12 +19,10 @@ const InstructionTable& get_baseline_instruction_table(evmc_revision rev) noexce
             {
                 auto& t = table[i];
                 t.gas_cost = instr::gas_costs[r][i];  // Include instr::undefined in the table.
-                t.stack_height_required = instr::traits[i].stack_height_required;
 
                 // Because any instruction can increase stack height at most of 1,
                 // stack overflow can only happen if stack height is already at the limit.
                 assert(instr::traits[i].stack_height_change <= 1);
-                t.can_overflow_stack = instr::traits[i].stack_height_change > 0;
             }
         }
         return tables;

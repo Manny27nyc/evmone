@@ -11,8 +11,6 @@ namespace evmone::baseline
 struct InstructionTableEntry
 {
     int16_t gas_cost;
-    int8_t stack_height_required;
-    bool can_overflow_stack;
 };
 
 using InstructionTable = std::array<InstructionTableEntry, 256>;
