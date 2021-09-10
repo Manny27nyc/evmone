@@ -57,7 +57,7 @@ inline evmc_status_code check_requirements(
 
     if constexpr (since != EVMC_FRONTIER)
     {
-        if (INTX_UNLIKELY(metrics.gas_cost == instr::undefined))
+        if (INTX_UNLIKELY(state.rev < since))
             return EVMC_UNDEFINED_INSTRUCTION;
     }
 
