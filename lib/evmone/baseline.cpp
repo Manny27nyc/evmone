@@ -84,6 +84,7 @@ inline evmc_status_code check_requirements(
 /// Implementation of a generic instruction "case".
 #define DISPATCH_CASE(OPCODE)                                                         \
     case OPCODE:                                                                      \
+        asm("# " #OPCODE " begin");                                                   \
         if (const auto status = check_requirements<OPCODE>(instruction_table, state); \
             status != EVMC_SUCCESS)                                                   \
         {                                                                             \
@@ -92,6 +93,7 @@ inline evmc_status_code check_requirements(
         }                                                                             \
         if (code_it = invoke(op2fn::OPCODE, state, code_it); !code_it)                \
             goto exit;                                                                \
+        asm("# " #OPCODE " end");                                                     \
         break
 
 /// The signature of basic instructions which always succeed, e.g. ADD.
