@@ -117,8 +117,11 @@ evmc_result execute(const VM& vm, ExecutionState& state, const CodeAnalysis& ana
             state.status = EVMC_SUCCESS;  // Not needed, but does some magic to clang optimization.
             goto exit;
         case OP_ADD:
+            asm("# OP_ADD begin");
             add(state);
-            DISPATCH_NEXT();
+            ++code_it;
+            asm("# OP_ADD end");
+            break;
         case OP_MUL:
             mul(state);
             DISPATCH_NEXT();
@@ -154,8 +157,11 @@ evmc_result execute(const VM& vm, ExecutionState& state, const CodeAnalysis& ana
             DISPATCH_NEXT();
         }
         case OP_SIGNEXTEND:
+            asm("# OP_SIGNEXTEND begin");
             signextend(state);
-            DISPATCH_NEXT();
+            ++code_it;
+            asm("# OP_SIGNEXTEND end");
+            break;
 
         case OP_LT:
             lt(state);
@@ -176,8 +182,11 @@ evmc_result execute(const VM& vm, ExecutionState& state, const CodeAnalysis& ana
             iszero(state);
             DISPATCH_NEXT();
         case OP_AND:
+            asm("# OP_AND begin");
             and_(state);
-            DISPATCH_NEXT();
+            ++code_it;
+            asm("# OP_AND end");
+            break;
         case OP_OR:
             or_(state);
             DISPATCH_NEXT();
@@ -518,8 +527,11 @@ evmc_result execute(const VM& vm, ExecutionState& state, const CodeAnalysis& ana
             DISPATCH();
 
         case OP_DUP1:
+            asm("# OP_DUP1 begin");
             dup<1>(state);
-            DISPATCH_NEXT();
+            ++code_it;
+            asm("# OP_DUP1 end");
+            break;
         case OP_DUP2:
             dup<2>(state);
             DISPATCH_NEXT();
