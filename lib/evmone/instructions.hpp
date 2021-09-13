@@ -147,7 +147,7 @@ inline evmc_status_code exp(ExecutionState& state) noexcept
     return EVMC_SUCCESS;
 }
 
-inline void signextend(ExecutionState& state) noexcept
+[[gnu::always_inline]] inline void signextend(ExecutionState& state) noexcept
 {
     const auto ext = state.stack.pop();
     auto& x = state.stack.top();
