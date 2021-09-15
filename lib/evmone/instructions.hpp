@@ -31,7 +31,8 @@ inline constexpr int64_t num_words(uint64_t size_in_bytes) noexcept
     return (static_cast<int64_t>(size_in_bytes) + (word_size - 1)) / word_size;
 }
 
-inline bool check_memory(ExecutionState& state, const uint256& offset, uint64_t size) noexcept
+[[gnu::always_inline]] inline bool check_memory(
+    ExecutionState& state, const uint256& offset, uint64_t size) noexcept
 {
     if (offset > max_buffer_size)
         return false;
@@ -55,7 +56,7 @@ inline bool check_memory(ExecutionState& state, const uint256& offset, uint64_t 
     return true;
 }
 
-inline bool check_memory(ExecutionState& state, const uint256& offset, const uint256& size) noexcept
+[[gnu::noinline]] inline bool check_memory(ExecutionState& state, const uint256& offset, const uint256& size) noexcept
 {
     if (size == 0)
         return true;
@@ -568,7 +569,7 @@ inline void pop(ExecutionState& state) noexcept
     state.stack.pop();
 }
 
-inline evmc_status_code mload(ExecutionState& state) noexcept
+[[gnu::always_inline]] inline evmc_status_code mload(ExecutionState& state) noexcept
 {
     auto& index = state.stack.top();
 
@@ -579,7 +580,7 @@ inline evmc_status_code mload(ExecutionState& state) noexcept
     return EVMC_SUCCESS;
 }
 
-inline evmc_status_code mstore(ExecutionState& state) noexcept
+[[gnu::always_inline]] inline evmc_status_code mstore(ExecutionState& state) noexcept
 {
     const auto index = state.stack.pop();
     const auto value = state.stack.pop();
@@ -591,7 +592,7 @@ inline evmc_status_code mstore(ExecutionState& state) noexcept
     return EVMC_SUCCESS;
 }
 
-inline evmc_status_code mstore8(ExecutionState& state) noexcept
+[[gnu::always_inline]] inline evmc_status_code mstore8(ExecutionState& state) noexcept
 {
     const auto index = state.stack.pop();
     const auto value = state.stack.pop();
