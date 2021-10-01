@@ -10,6 +10,8 @@
 #include <evmc/instructions.h>
 #include <memory>
 
+#include <sys/sdt.h>
+
 namespace evmone::baseline
 {
 CodeAnalysis analyze(const uint8_t* code, size_t code_size)
@@ -103,6 +105,8 @@ evmc_result execute(const VM& vm, ExecutionState& state, const CodeAnalysis& ana
         }
 
         const auto op = *code_it;
+        DTRACE_PROBE1(evmone, op_start, op);
+
         if (const auto status = check_requirements(instruction_table, state, op);
             status != EVMC_SUCCESS)
         {
@@ -741,6 +745,9 @@ evmc_result execute(const VM& vm, ExecutionState& state, const CodeAnalysis& ana
         default:
             INTX_UNREACHABLE();
         }
+
+        DTRACE_PROBE1(evmone, op_end, op);
+        DTRACE_PROBE1(evmone, overhead_test, op);
     }
 
 exit:
